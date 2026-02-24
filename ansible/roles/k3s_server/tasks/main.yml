@@ -1,0 +1,31 @@
+---
+- name: Install K3s server
+  shell: |
+    curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+  args:
+    creates: /usr/local/bin/k3s
+  environment:
+    INSTALL_K3S_EXEC: "--write-kubeconfig-mode 644"
+
+- name: Enable and start k3s service
+  systemd:
+    name: k3s
+    enabled: true
+    state: started
+
+- name: Wait for K3s node to be Ready
+  command: k3s kubectl get nodes
+  register: nodes_output
+  until: "'Ready' in nodes_output.stdout"
+  retries: 20
+  delay: 10
+  changed_when: false
+
+- name: Read K3s node token
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: k3s_token_raw
+
+- name: Set k3s_token fact
+  set_fact:
+    k3s_token: "{{ k3s_token_raw.content | b64decode | trim }}"

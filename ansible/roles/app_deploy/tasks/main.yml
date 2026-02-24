@@ -1,0 +1,51 @@
+---
+- name: Build Docker image on control machine
+  delegate_to: localhost
+  become: false
+  command: docker build -t shop-app:latest {{ playbook_dir }}/../app
+  changed_when: true
+
+- name: Save Docker image to tar archive
+  delegate_to: localhost
+  become: false
+  command: docker save shop-app:latest -o /tmp/shop-app.tar
+  changed_when: true
+
+- name: Copy image archive to K3s server
+  copy:
+    src: /tmp/shop-app.tar
+    dest: /tmp/shop-app.tar
+    mode: "0644"
+
+- name: Import image into K3s containerd
+  command: k3s ctr images import /tmp/shop-app.tar
+  changed_when: true
+
+- name: Remove image archive from server
+  file:
+    path: /tmp/shop-app.tar
+    state: absent
+
+- name: Create manifests directory on server
+  file:
+    path: /tmp/shop-manifests
+    state: directory
+    mode: "0755"
+
+- name: Copy K8s manifests to server
+  copy:
+    src: "{{ playbook_dir }}/manifests/"
+    dest: /tmp/shop-manifests/
+    mode: "0644"
+
+- name: Apply namespace first
+  command: k3s kubectl apply -f /tmp/shop-manifests/namespace.yaml
+  changed_when: true
+
+- name: Apply remaining manifests
+  command: k3s kubectl apply -f /tmp/shop-manifests/
+  changed_when: true
+
+- name: Wait for deployment rollout
+  command: k3s kubectl rollout status deployment/shop-app -n shop --timeout=120s
+  changed_when: false

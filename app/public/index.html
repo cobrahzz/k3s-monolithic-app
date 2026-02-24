@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K3s Shop</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <span class="logo">🛒 K3s Shop</span>
+        <span class="tagline">Deployed on Kubernetes</span>
+      </div>
+      <div class="user-switcher">
+        <span class="user-label">Shopping as:</span>
+        <div class="user-pills" id="user-pills">
+          <button class="user-pill" data-user="alice">Alice</button>
+          <button class="user-pill" data-user="bob">Bob</button>
+          <button class="user-pill" data-user="charlie">Charlie</button>
+          <button class="user-pill" data-user="diana">Diana</button>
+        </div>
+        <div class="user-custom">
+          <input id="custom-user-input" type="text" placeholder="Custom user…" maxlength="32">
+          <button id="custom-user-btn">Go</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <main id="products-section">
+      <h2>Products</h2>
+      <div id="products-grid"></div>
+    </main>
+
+    <aside id="basket-panel">
+      <h2>Your Basket</h2>
+      <ul id="basket-items"></ul>
+      <div id="basket-footer">
+        <div id="basket-total"></div>
+        <button id="pay-btn" disabled>Pay Now</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

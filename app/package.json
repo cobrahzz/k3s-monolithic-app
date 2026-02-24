@@ -1,0 +1,13 @@
+{
+  "name": "shop-app",
+  "version": "1.0.0",
+  "description": "Amazon-like monolithic shop on K3s",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.0",
+    "express": "^4.19.0"
+  }
+}

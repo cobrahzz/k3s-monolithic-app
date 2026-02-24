@@ -1,0 +1,37 @@
+# ── Terraform ─────────────────────────────────────────────────────────────────
+# tfvars contiennent les secrets (mots de passe, tokens)
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+
+# Cache provider local (regénéré par terraform init)
+.terraform/
+
+# Note: .terraform.lock.hcl est volontairement commité
+# (verrouillage des versions de providers, comme package-lock.json)
+
+# ── SSH ────────────────────────────────────────────────────────────────────────
+*.pem
+id_rsa
+id_ed25519
+k3s_ed25519
+# Pas de *.key (trop générique, peut ignorer des fichiers légitimes)
+
+# ── Node.js ────────────────────────────────────────────────────────────────────
+node_modules/
+app/shop.db
+
+# ── Ansible ────────────────────────────────────────────────────────────────────
+# Généré automatiquement par Terraform (local_file resource)
+ansible/inventory.ini
+
+# ── Éditeurs ──────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

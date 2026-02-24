@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-app
+  namespace: shop
+  labels:
+    app: shop-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shop-app
+  template:
+    metadata:
+      labels:
+        app: shop-app
+    spec:
+      # fsGroup: chowns the PVC mount to gid 1000 (node user) at pod start
+      securityContext:
+        fsGroup: 1000
+      # Pin pod to the server node so it co-locates with the PVC and the
+      # locally-imported image (imagePullPolicy: Never).
+      nodeSelector:
+        kubernetes.io/hostname: k3s-server-1
+      containers:
+        - name: shop-app
+          image: shop-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_PATH
+              value: /data/shop.db
+          volumeMounts:
+            - name: db-storage
+              mountPath: /data
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: shop-db-pvc
